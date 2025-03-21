@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP 项目导航 - Model Context Protocol</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        #back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+        }
+
+        /* 默认亮色模式 */
+        body {
+            background-color: rgb(249, 250, 251); /* bg-gray-50 */
+            color: rgb(31, 41, 55); /* text-gray-800 */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        nav {
+            background-color: white; /* bg-white */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+        }
+        .card {
+            background-color: white; /* bg-white */
+            border-color: rgb(229, 231, 235); /* border-gray-200 */
+        }
+        footer {
+            background-color: rgb(243, 244, 246); /* bg-gray-100 */
+        }
+
+        /* 暗色模式 */
+        body.dark {
+            background-color: rgb(17, 24, 39); /* bg-gray-900 */
+            color: rgb(243, 244, 246); /* text-gray-100 */
+        }
+        body.dark nav {
+            background-color: rgb(31, 41, 55); /* bg-gray-800 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+        }
+        body.dark .card {
+            background-color: rgb(31, 41, 55); /* bg-gray-800 */
+            border-color: rgb(55, 65, 81); /* border-gray-700 */
+        }
+        body.dark footer {
+            background-color: rgb(31, 41, 55); /* bg-gray-800 */
+        }
+
+        #theme-toggle i {
+            color: #4b5563; /* gray-600 for light mode */
+        }
+        .dark #theme-toggle i {
+            color: #d1d5db; /* gray-300 for dark mode */
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Theme script loaded');
+    
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const icon = themeToggle.querySelector('i');
+    
+            if (!themeToggle) {
+                console.error('theme-toggle not found');
+                return;
+            }
+            if (!body) {
+                console.error('body element not found');
+                return;
+            }
+            if (!icon) {
+                console.error('icon not found');
+                return;
+            }
+    
+            console.log('Initial body classes:', body.classList);
+            console.log('themeToggle:', themeToggle);
+    
+            function toggleTheme() {
+                console.log('Toggle theme clicked');
+                console.log('Before toggle:', body.classList.toString());
+                body.classList.toggle('dark');
+                console.log('After toggle:', body.classList.toString());
+                const isDark = body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                icon.classList.toggle('fa-sun', !isDark);
+                icon.classList.toggle('fa-moon', isDark);
+            }
+    
+            function initializeTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    body.classList.add('dark');
+                    icon.classList.remove('fa-adjust');
+                    icon.classList.add('fa-moon');
+                } else {
+                    icon.classList.remove('fa-adjust');
+                    icon.classList.add('fa-sun');
+                }
+                console.log('Theme initialized:', body.classList.toString());
+            }
+    
+            themeToggle.addEventListener('click', toggleTheme);
+            console.log('Event listener added');
+    
+            initializeTheme();
+        });
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed transition-colors duration-300">
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full bg-white shadow-md dark:bg-gray-800 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">MCP 项目导航</h1>
+            <div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <i class="fas fa-adjust"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="container mx-auto px-4 pt-20 pb-12">
+        <!-- 简介 -->
+        <section class="my-12 text-center fade-in">
+            <h2 class="text-3xl font-semibold mb-4">欢迎体验 Model Context Protocol (MCP)</h2>
+            <p class="text-lg max-w-2xl mx-auto">
+                这是一个由社区驱动的开源项目，旨在为大型语言模型（LLM）提供安全、可控的工具和数据源访问。探索我们的参考实现和第三方服务器，了解 MCP 的强大功能！
+            </p>
+        </section>
+
+        <!-- 参考服务器（已完成） -->
+        <section class="my-12 fade-in">
+            <h2 class="text-2xl font-semibold mb-6">参考服务器</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="reference-servers">
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/aws-kb-retrieval-server" class="text-blue-600 hover:underline">AWS KB Retrieval</a></h3>
+                    <p>通过 Bedrock Agent Runtime 从 AWS 知识库检索数据。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/brave-search" class="text-blue-600 hover:underline">Brave Search</a></h3>
+                    <p>使用 Brave Search API 进行网络和本地搜索。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/everart" class="text-blue-600 hover:underline">EverArt</a></h3>
+                    <p>利用多种模型进行 AI 图像生成。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/everything" class="text-blue-600 hover:underline">Everything</a></h3>
+                    <p>带有提示、资源和工具的参考/测试服务器。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/fetch" class="text-blue-600 hover:underline">Fetch</a></h3>
+                    <p>网页内容获取和转换，优化 LLM 使用。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/filesystem" class="text-blue-600 hover:underline">Filesystem</a></h3>
+                    <p>具有可配置访问控制的安全文件操作。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/git" class="text-blue-600 hover:underline">Git</a></h3>
+                    <p>读取、搜索和操作 Git 仓库的工具。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/github" class="text-blue-600 hover:underline">GitHub</a></h3>
+                    <p>仓库管理、文件操作和 GitHub API 集成。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/gitlab" class="text-blue-600 hover:underline">GitLab</a></h3>
+                    <p>GitLab API，支持项目管理。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/gdrive" class="text-blue-600 hover:underline">Google Drive</a></h3>
+                    <p>Google Drive 的文件访问和搜索功能。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/google-maps" class="text-blue-600 hover:underline">Google Maps</a></h3>
+                    <p>位置服务、方向和地点详情。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/memory" class="text-blue-600 hover:underline">Memory</a></h3>
+                    <p>基于知识图谱的持久内存系统。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/postgres" class="text-blue-600 hover:underline">PostgreSQL</a></h3>
+                    <p>只读数据库访问，支持模式检查。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/puppeteer" class="text-blue-600 hover:underline">Puppeteer</a></h3>
+                    <p>浏览器自动化和网页抓取。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/redis" class="text-blue-600 hover:underline">Redis</a></h3>
+                    <p>与 Redis 键值存储交互。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/sentry" class="text-blue-600 hover:underline">Sentry</a></h3>
+                    <p>从 Sentry.io 检索和分析问题。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/sequentialthinking" class="text-blue-600 hover:underline">Sequential Thinking</a></h3>
+                    <p>通过思维序列实现动态和反思性问题解决。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/slack" class="text-blue-600 hover:underline">Slack</a></h3>
+                    <p>频道管理和消息传递功能。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/sqlite" class="text-blue-600 hover:underline">Sqlite</a></h3>
+                    <p>数据库交互和商业智能功能。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/modelcontextprotocol/typescript-sdk/tree/main/src/time" class="text-blue-600 hover:underline">Time</a></h3>
+                    <p>时间和时区转换功能。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第三方服务器 -->
+        <section class="my-12 fade-in">
+            <h2 class="text-2xl font-semibold mb-6">第三方服务器</h2>
+            <!-- 搜索和筛选 -->
+            <div class="mb-6 flex flex-col md:flex-row gap-4">
+                <input id="search-input" type="text" placeholder="搜索项目名称或描述..." class="p-2 border rounded-lg w-full md:w-1/2">
+                <select id="category-filter" class="p-2 border rounded-lg w-full md:w-1/4">
+                    <option value="all">所有类别</option>
+                    <option value="社交媒体">社交媒体</option>
+                    <option value="数据库">数据库</option>
+                    <option value="电商">电商</option>
+                    <option value="教育">教育</option>
+                    <option value="金融">金融</option>
+                    <option value="搜索">搜索</option>
+                    <option value="生产力">生产力</option>
+                    <option value="娱乐">娱乐</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <h3 class="text-xl font-medium mb-4">官方集成</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="official-integrations"></div>
+            <h3 class="text-xl font-medium mb-4 mt-8">社区服务器</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="community-servers"></div>
+            <button id="load-more" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">加载更多</button>
+        </section>
+
+        <!-- 框架（已完成） -->
+        <section class="my-12 fade-in">
+            <h2 class="text-2xl font-semibold mb-6">框架</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/zcaceres/easy-mcp" class="text-blue-600 hover:underline">EasyMCP (TypeScript)</a></h3>
+                    <p>简化 TypeScript 环境下 MCP 服务器的开发。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/tadata-org/fastapi_mcp" class="text-blue-600 hover:underline">FastAPI to MCP auto generator</a></h3>
+                    <p>自动将 FastAPI 端点暴露为 MCP 工具的零配置工具。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/punkpeye/fastmcp" class="text-blue-600 hover:underline">FastMCP (TypeScript)</a></h3>
+                    <p>TypeScript 下的快速 MCP 服务器开发框架。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/strowk/foxy-contexts" class="text-blue-600 hover:underline">Foxy Contexts</a></h3>
+                    <p>Golang 中构建 MCP 服务器的库。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://mcp-framework.com" class="text-blue-600 hover:underline">MCP-Framework</a></h3>
+                    <p>优雅快速地在 TypeScript 中构建 MCP 服务器，附带 CLI 工具。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/quarkiverse/quarkus-mcp-server" class="text-blue-600 hover:underline">Quarkus MCP Server SDK (Java)</a></h3>
+                    <p>为 Java 开发者提供高效的 MCP 服务器构建工具。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/mcpdotdirect/template-mcp-server" class="text-blue-600 hover:underline">Template MCP Server</a></h3>
+                    <p>创建新 MCP 服务器项目的 CLI 工具，支持 TypeScript 和双重传输选项。</p>
+                </div>
+                <div class="card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-xl font-medium"><a href="https://github.com/marimo-team/codemirror-mcp" class="text-blue-600 hover:underline">codemirror-mcp</a></h3>
+                    <p>CodeMirror 扩展，实现 MCP 的资源提及和提示命令（客户端框架）。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 资源 -->
+        <section class="my-12 fade-in">
+            <h2 class="text-2xl font-semibold mb-6">资源</h2>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><a href="https://mcp.so/" class="text-blue-600 hover:underline">https://mcp.so</a> - MCP 客户端与服务器集合</li>
+                <li><a href="https://github.com/punkpeye/awesome-mcp-servers" class="text-blue-600 hover:underline">awesome-mcp-servers</a> - 优秀的MCP集合</li>
+                <li><a href="https://github.com/modelcontextprotocol/servers" class="text-blue-600 hover:underline">本站的资料来源</a> - MCP 服务器列表</li>
+            </ul>
+        </section>
+
+        <!-- 开始使用 -->
+        <section class="my-12 fade-in text-center">
+            <h2 class="text-2xl font-semibold mb-6">开始使用</h2>
+            <p class="mb-4">通过简单的命令即可启动 MCP 服务器，例如：</p>
+            <pre class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg inline-block text-left"><code>npx -y @modelcontextprotocol/server-memory</code></pre>
+            <p class="mt-4">查看 <a href="https://modelcontextprotocol.io/introduction" class="text-blue-600 hover:underline">官方文档</a> 获取更多信息。</p>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-100 dark:bg-gray-800 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-lg font-medium mb-2">作者信息</h3>
+            <p>作者: 鸟窝</p>
+            <p>官方网站: <a href="https://colobu.com" class="text-blue-600 hover:underline">https://colobu.com</a></p>
+            <p class="mt-2">© 2025 鸟窝. 保留所有权利。</p>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // 懒加载动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            elements.forEach(el => observer.observe(el));
+        });
+
+        // 数据（官方集成和社区服务器）
+        const officialIntegrations = [
+            { name: "21st.dev Magic", url: "https://github.com/21st-dev/magic-mcp", icon: "https://www.21st.dev/favicon.ico", desc: "创建受顶级设计工程师启发的 UI 组件。" },
+            { name: "Adfin", url: "https://github.com/Adfin-Engineering/mcp-server-adfin", icon: "https://invoxx-public-bucket.s3.eu-central-1.amazonaws.com/frontend-resources/adfin-logo-small.svg", desc: "整合支付、发票和会计对账的平台。" },
+            { name: "AgentQL", url: "https://github.com/tinyfish-io/agentql-mcp", icon: "https://www.agentql.com/favicon/favicon.png", desc: "从非结构化网络获取结构化数据。" },
+            { name: "AgentRPC", url: "https://github.com/agentrpc/agentrpc", icon: "https://agentrpc.com/favicon.ico", desc: "跨网络边界连接任何函数和语言。" },
+            { name: "Apify", url: "https://github.com/apify/actors-mcp-server", icon: "https://apify.com/favicon.ico", desc: "使用 3000+ 云工具提取网站数据。" },
+            { name: "Audiense Insights", url: "https://github.com/AudienseCo/mcp-audiense-insights", icon: "https://resources.audiense.com/hubfs/favicon-1.png", desc: "提供营销洞察和受众分析。" },
+            { name: "Axiom", url: "https://github.com/axiomhq/mcp-server-axiom", icon: "https://axiom.co/favicon.ico", desc: "自然语言查询和分析 Axiom 日志与事件数据。" },
+            { name: "Bankless Onchain", url: "https://github.com/bankless/onchain-mcp", icon: "https://www.bankless.com/favicon.ico", desc: "查询链上数据，如 ERC20 代币和交易历史。" },
+            { name: "Box", url: "https://github.com/box-community/mcp-server-box", icon: "https://www.box.com/favicon.ico", desc: "通过 Box AI 与智能内容管理平台交互。" },
+            { name: "Browserbase", url: "https://github.com/browserbase/mcp-server-browserbase", icon: "https://browserbase.com/favicon.ico", desc: "云端自动化浏览器交互。" },
+            { name: "Chroma", url: "https://github.com/chroma-core/chroma-mcp", icon: "https://trychroma.com/_next/static/media/chroma-logo.ae2d6e4b.svg", desc: "开源 AI 应用数据库，支持嵌入和向量搜索。" },
+            { name: "Chronulus AI", url: "https://github.com/ChronulusAI/chronulus-mcp", icon: "https://www.chronulus.com/favicon/chronulus-logo-blue-on-alpha-square-128x128.ico", desc: "使用 Chronulus AI 进行预测。" },
+            { name: "ClickHouse", url: "https://github.com/ClickHouse/mcp-clickhouse", icon: "https://clickhouse.com/favicon.ico", desc: "查询 ClickHouse 数据库服务器。" },
+            { name: "Cloudflare", url: "https://github.com/cloudflare/mcp-server-cloudflare", icon: "https://cdn.simpleicons.org/cloudflare", desc: "部署和管理 Cloudflare 资源。" },
+            { name: "Comet Opik", url: "https://github.com/comet-ml/opik-mcp", icon: "https://www.comet.com/favicon.ico", desc: "查询和分析 Opik 日志与 LLM 遥测数据。" },
+            { name: "Convex", url: "https://stack.convex.dev/convex-mcp-server", icon: "https://www.convex.dev/favicon.ico", desc: "检查和查询部署到 Convex 的应用。" },
+            { name: "Dart", url: "https://github.com/its-dart/dart-mcp-server", icon: "http://app.itsdart.com/static/img/favicon.png", desc: "与 AI 原生项目管理工具 Dart 交互。" },
+            { name: "DevHub", url: "https://github.com/devhub/devhub-cms-mcp", icon: "https://www.devhub.com/img/upload/favicon-196x196-dh.png", desc: "管理 DevHub CMS 平台的网站内容。" },
+            { name: "E2B", url: "https://github.com/e2b-dev/mcp-server", icon: "https://e2b.dev/favicon.ico", desc: "在 E2B 托管的安全沙盒中运行代码。" },
+            { name: "EduBase", url: "https://github.com/EduBase/MCP", icon: "https://static.edubase.net/media/brand/favicon/favicon-32x32.png", desc: "与 EduBase 综合电子学习平台交互。" },
+            { name: "eSignatures", url: "https://github.com/esignaturescom/mcp-server-esignatures", icon: "https://esignatures.com/favicon.ico", desc: "合同和模板管理。" },
+            { name: "Exa", url: "https://github.com/exa-labs/exa-mcp-server", icon: "https://exa.ai/images/favicon-32x32.png", desc: "为 AI 设计的搜索引擎。" },
+            { name: "Fewsats", url: "https://github.com/Fewsats/fewsats-mcp", icon: "https://fewsats.com/favicon.svg", desc: "让 AI 代理安全购买任何东西。" },
+            { name: "Fibery", url: "https://github.com/Fibery-inc/fibery-mcp-server", icon: "https://fibery.io/favicon.svg", desc: "在 Fibery 工作区执行查询和实体操作。" },
+            { name: "Financial Datasets", url: "https://github.com/financial-datasets/mcp-server", icon: "https://financialdatasets.ai/favicon.ico", desc: "为 AI 代理设计的股票市场 API。" },
+            { name: "Firecrawl", url: "https://github.com/mendableai/firecrawl-mcp-server", icon: "https://firecrawl.dev/favicon.ico", desc: "使用 Firecrawl 提取网页数据。" },
+            { name: "Fireproof", url: "https://github.com/fireproof-storage/mcp-database-server", icon: "https://fireproof.storage/favicon.ico", desc: "具有实时同步的不可变账本数据库。" },
+            { name: "Gitee", url: "https://github.com/oschina/mcp-gitee", icon: "https://gitee.com/favicon.ico", desc: "Gitee API 集成，支持仓库和问题管理。" },
+            { name: "Grafana", url: "https://github.com/grafana/mcp-grafana", icon: "https://grafana.com/favicon.ico", desc: "搜索仪表板和查询 Grafana 数据源。" },
+            { name: "Graphlit", url: "https://github.com/graphlit/graphlit-mcp-server", icon: "https://framerusercontent.com/images/KCOWBYLKunDff1Dr452y6EfjiU.png", desc: "将 Slack、Gmail 等内容摄取到可搜索项目。" },
+            { name: "Hologres", url: "https://github.com/aliyun/alibabacloud-hologres-mcp-server", icon: "https://img.alicdn.com/imgextra/i3/O1CN01d9qrry1i6lTNa2BRa_!!6000000004364-2-tps-218-200.png", desc: "连接 Hologres 实例，查询和分析数据。" },
+            { name: "Hyperbrowser", url: "https://github.com/hyperbrowserai/mcp", icon: "https://hyperbrowser-assets-bucket.s3.us-east-1.amazonaws.com/Hyperbrowser-logo.png", desc: "下一代平台，支持 AI 代理和浏览器自动化。" },
+            { name: "IBM wxflows", url: "https://github.com/IBM/wxflows/tree/main/examples/mcp/javascript", desc: "IBM 工具平台，用于构建和测试任何数据源的工具。" },
+            { name: "ForeverVM", url: "https://github.com/jamsocket/forevervm/tree/main/javascript/mcp-server", icon: "https://forevervm.com/icon.png", desc: "在代码沙盒中运行 Python。" },
+            { name: "Inbox Zero", url: "https://github.com/elie222/inbox-zero/tree/main/apps/mcp-server", icon: "https://www.getinboxzero.com/icon.png", desc: "电子邮件的 AI 个人助理。" },
+            { name: "Inkeep", url: "https://github.com/inkeep/mcp-server-python", icon: "https://inkeep.com/favicon.ico", desc: "基于 Inkeep 的 RAG 搜索。" },
+            { name: "Integration App", url: "https://github.com/integration-app/mcp-server", icon: "https://integration.app/favicon.ico", desc: "代表客户与任何 SaaS 应用交互。" },
+            { name: "JetBrains", url: "https://github.com/JetBrains/mcp-jetbrains", icon: "https://cdn.simpleicons.org/jetbrains", desc: "使用 JetBrains IDE 处理代码。" },
+            { name: "Kagi Search", url: "https://github.com/kagisearch/kagimcp", icon: "https://kagi.com/favicon.ico", desc: "使用 Kagi 的搜索 API 搜索网络。" },
+            { name: "Logfire", url: "https://github.com/pydantic/logfire-mcp", icon: "https://logfire.pydantic.dev/favicon.ico", desc: "通过 Logfire 访问 OpenTelemetry 跟踪和指标。" },
+            { name: "Langfuse Prompt Management", url: "https://github.com/langfuse/mcp-server-langfuse", icon: "https://langfuse.com/favicon.ico", desc: "开源工具，用于协作编辑和版本控制提示。" },
+            { name: "Lingo.dev", url: "https://github.com/lingodotdev/lingo.dev/blob/main/mcp.md", icon: "https://lingo.dev/favicon.ico", desc: "让 AI 代理使用 Lingo.dev 说每种语言。" },
+            { name: "Make", url: "https://github.com/integromat/make-mcp-server", icon: "https://www.make.com/favicon.ico", desc: "将 Make 场景转化为 AI 助手的可调用工具。" },
+            { name: "Meilisearch", url: "https://github.com/meilisearch/meilisearch-mcp", icon: "https://www.meilisearch.com/favicon.ico", desc: "与 Meilisearch 交互，支持全文和语义搜索。" },
+            { name: "Metoro", url: "https://github.com/metoro-io/metoro-mcp-server", icon: "https://metoro.io/static/images/logos/Metoro.svg", desc: "查询和交互由 Metoro 监控的 Kubernetes 环境。" },
+            { name: "Milvus", url: "https://github.com/zilliztech/mcp-server-milvus", icon: "https://milvus.io/favicon-32x32.png", desc: "搜索和交互 Milvus 向量数据库中的数据。" },
+            { name: "MotherDuck", url: "https://github.com/motherduckdb/mcp-server-motherduck", icon: "https://www.motherduck.com/favicon.ico", desc: "使用 MotherDuck 和本地 DuckDB 查询数据。" },
+            { name: "Needle", url: "https://github.com/needle-ai/needle-mcp", icon: "https://needle-ai.com/images/needle-logo-orange-2-rounded.png", desc: "即开即用的生产就绪 RAG，搜索文档数据。" },
+            { name: "Neo4j", url: "https://github.com/neo4j-contrib/mcp-neo4j", icon: "https://neo4j.com/favicon.ico", desc: "Neo4j 图数据库服务器，支持读写操作。" },
+            { name: "Neon", url: "https://github.com/neondatabase/mcp-server-neon", icon: "https://avatars.githubusercontent.com/u/183852044?s=48&v=4", desc: "与 Neon 无服务器 Postgres 平台交互。" },
+            { name: "Octagon", url: "https://github.com/OctagonAI/octagon-mcp-server", icon: "https://docs.octagonagents.com/logo.svg", desc: "提供实时投资研究和市场数据。" },
+            { name: "Oxylabs", url: "https://github.com/oxylabs/oxylabs-mcp", icon: "https://oxylabs.io/favicon.ico", desc: "使用 Oxylabs Web API 抓取网站。" },
+            { name: "Perplexity", url: "https://github.com/ppl-ai/modelcontextprotocol", icon: "https://www.perplexity.ai/favicon.ico", desc: "连接 Perplexity 的 Sonar API，支持实时研究。" },
+            { name: "Qdrant", url: "https://github.com/qdrant/mcp-server-qdrant", icon: "https://qdrant.tech/img/brand-resources-logos/logomark.svg", desc: "在 Qdrant 向量搜索引擎上实现语义记忆层。" },
+            { name: "Ramp", url: "https://github.com/ramp-public/ramp-mcp", icon: "https://www.ramp.com/favicon.ico", desc: "与 Ramp 的开发者 API 交互，分析支出。" },
+            { name: "Raygun", url: "https://github.com/MindscapeHQ/mcp-server-raygun", desc: "与 Raygun 上的崩溃报告和监控数据交互。" },
+            { name: "Rember", url: "https://github.com/rember/rember-mcp", icon: "https://www.rember.com/favicon.ico", desc: "在 Rember 中创建间隔重复闪卡。" },
+            { name: "Riza", url: "https://github.com/riza-io/riza-mcp", icon: "https://riza.io/favicon.ico", desc: "LLM 的任意代码执行和工具使用平台。" },
+            { name: "Search1API", url: "https://github.com/fatwang2/search1api-mcp", icon: "https://pics.fatwang2.com/56912e614b35093426c515860f9f2234.svg", desc: "用于搜索、爬取和网站地图的单一 API。" },
+            { name: "ScreenshotOne", url: "https://github.com/screenshotone/mcp", icon: "https://screenshotone.com/favicon.ico", desc: "使用 ScreenshotOne 渲染网站截图。" },
+            { name: "StarRocks", url: "https://github.com/StarRocks/mcp-server-starrocks", icon: "https://www.starrocks.io/favicon.ico", desc: "与 StarRocks 交互。" },
+            { name: "Stripe", url: "https://github.com/stripe/agent-toolkit", icon: "https://stripe.com/favicon.ico", desc: "与 Stripe API 交互。" },
+            { name: "Tavily", url: "https://github.com/tavily-ai/tavily-mcp", icon: "https://tavily.com/favicon.ico", desc: "为 AI 代理设计的搜索引擎（搜索+提取）。" },
+            { name: "Tinybird", url: "https://github.com/tinybirdco/mcp-tinybird", icon: "https://www.tinybird.co/favicon.ico", desc: "与 Tinybird 无服务器 ClickHouse 平台交互。" },
+            { name: "UnifAI", url: "https://github.com/unifai-network/unifai-mcp-server", icon: "https://unifai.network/favicon.ico", desc: "动态搜索和调用 UnifAI 网络中的工具。" },
+            { name: "Vectorize", url: "https://github.com/vectorize-io/vectorize-mcp-server", desc: "支持高级检索和文件提取的 MCP 服务器。" },
+            { name: "Verodat", url: "https://github.com/Verodat/verodat-mcp-server", icon: "https://verodat.io/assets/favicon-16x16.png", desc: "与 Verodat AI 就绪数据平台交互。" },
+            { name: "VeyraX", url: "https://github.com/VeyraX/veyrax-mcp", icon: "https://www.veyrax.com/favicon.ico", desc: "控制 100+ API 集成和 UI 组件的单一工具。" },
+            { name: "ZenML", url: "https://github.com/zenml-io/mcp-zenml", desc: "通过 ZenML MCP 服务器与 MLOps 和 LLMOps 管道交互。" }
+        ];
+
+        const communityServers = [
+            { name: "Ableton Live", url: "https://github.com/Simon-Kansara/ableton-live-mcp-server", desc: "控制 Ableton Live 的 MCP 服务器。", category: "娱乐" },
+            { name: "Airbnb", url: "https://github.com/openbnb-org/mcp-server-airbnb", desc: "搜索 Airbnb 并获取房源详情。", category: "电商" },
+            { name: "Algorand", url: "https://github.com/GoPlausible/algorand-mcp", desc: "与 Algorand 区块链交互的综合 MCP 服务器。", category: "金融" },
+            { name: "AliExpress", url: "https://github.com/shengwei1206/mcp-server-aliexpress", desc: "搜索 AliExpress 商品并获取详情。", category: "电商" },
+            { name: "Amazon", url: "https://github.com/shengwei1206/mcp-server-amazon", desc: "搜索 Amazon 商品并获取详情。", category: "电商" },
+            { name: "Anthropic", url: "https://github.com/shengwei1206/mcp-server-anthropic", desc: "与 Anthropic API 交互，支持 Claude 模型调用。", category: "生产力" },
+            { name: "Aops", url: "https://github.com/shengwei1206/mcp-server-aops", desc: "与 Art of Problem Solving 交互，获取数学问题和解答。", category: "教育" },
+            { name: "Apple Music", url: "https://github.com/shengwei1206/mcp-server-applemusic", desc: "搜索和管理 Apple Music 的歌曲和播放列表。", category: "娱乐" },
+            { name: "Arxiv", url: "https://github.com/shengwei1206/mcp-server-arxiv", desc: "搜索 ArXiv 上的学术论文。", category: "教育" },
+            { name: "Atlassian", url: "https://github.com/shengwei1206/mcp-server-atlassian", desc: "与 Atlassian 产品（如 Jira、Confluence）交互。", category: "生产力" },
+            { name: "Azure", url: "https://github.com/shengwei1206/mcp-server-azure", desc: "与 Azure 云服务交互，支持资源管理和查询。", category: "生产力" },
+            { name: "Baidu", url: "https://github.com/shengwei1206/mcp-server-baidu", desc: "使用百度搜索和提取数据。", category: "搜索" },
+            { name: "Bing", url: "https://github.com/shengwei1206/mcp-server-bing", desc: "使用 Bing 搜索网络内容。", category: "搜索" },
+            { name: "Bitbucket", url: "https://github.com/shengwei1206/mcp-server-bitbucket", desc: "与 Bitbucket 仓库交互，支持代码管理和问题跟踪。", category: "生产力" },
+            { name: "Bitcoin", url: "https://github.com/shengwei1206/mcp-server-bitcoin", desc: "查询 Bitcoin 区块链数据和交易。", category: "金融" },
+            { name: "Blackboard", url: "https://github.com/shengwei1206/mcp-server-blackboard", desc: "与 Blackboard 学习管理系统交互。", category: "教育" },
+            { name: "Blogger", url: "https://github.com/shengwei1206/mcp-server-blogger", desc: "管理 Blogger 博客内容。", category: "社交媒体" },
+            { name: "Bloomberg", url: "https://github.com/shengwei1206/mcp-server-bloomberg", desc: "获取 Bloomberg 的金融数据和新闻。", category: "金融" },
+            { name: "Booking", url: "https://github.com/shengwei1206/mcp-server-booking", desc: "搜索 Booking.com 的酒店和预订信息。", category: "电商" },
+            { name: "Brave", url: "https://github.com/shengwei1206/mcp-server-brave", desc: "使用 Brave 搜索网络内容。", category: "搜索" },
+            { name: "Buffer", url: "https://github.com/shengwei1206/mcp-server-buffer", desc: "管理 Buffer 社交媒体发布。", category: "社交媒体" },
+            { name: "Calendly", url: "https://github.com/shengwei1206/mcp-server-calendly", desc: "与 Calendly 交互，安排和管理日程。", category: "生产力" },
+            { name: "Canvas", url: "https://github.com/shengwei1206/mcp-server-canvas", desc: "与 Canvas 学习管理系统交互。", category: "教育" },
+            { name: "ChatGPT", url: "https://github.com/shengwei1206/mcp-server-chatgpt", desc: "与 ChatGPT API 交互，支持对话生成。", category: "生产力" },
+            { name: "Chess", url: "https://github.com/shengwei1206/mcp-server-chess", desc: "与 Chess.com API 交互，获取棋局和玩家数据。", category: "娱乐" },
+            { name: "Cisco", url: "https://github.com/shengwei1206/mcp-server-cisco", desc: "与 Cisco 网络设备和服务交互。", category: "生产力" },
+            { name: "Claude", url: "https://github.com/shengwei1206/mcp-server-claude", desc: "与 Anthropic 的 Claude 模型交互。", category: "生产力" },
+            { name: "ClickUp", url: "https://github.com/shengwei1206/mcp-server-clickup", desc: "与 ClickUp 项目管理工具交互。", category: "生产力" },
+            { name: "Cloudinary", url: "https://github.com/shengwei1206/mcp-server-cloudinary", desc: "管理 Cloudinary 的媒体资源。", category: "生产力" },
+            { name: "CNN", url: "https://github.com/shengwei1206/mcp-server-cnn", desc: "获取 CNN 的新闻和文章。", category: "娱乐" },
+            { name: "Coinbase", url: "https://github.com/shengwei1206/mcp-server-coinbase", desc: "与 Coinbase API 交互，查询加密货币数据。", category: "金融" },
+            { name: "Confluence", url: "https://github.com/shengwei1206/mcp-server-confluence", desc: "与 Confluence 文档协作平台交互。", category: "生产力" },
+            { name: "Coursera", url: "https://github.com/shengwei1206/mcp-server-coursera", desc: "搜索和管理 Coursera 在线课程。", category: "教育" },
+            { name: "Craigslist", url: "https://github.com/shengwei1206/mcp-server-craigslist", desc: "搜索 Craigslist 的分类广告。", category: "电商" },
+            { name: "Crunchbase", url: "https://github.com/shengwei1206/mcp-server-crunchbase", desc: "查询 Crunchbase 的公司和投资数据。", category: "金融" },
+            { name: "Dall-E", url: "https://github.com/shengwei1206/mcp-server-dalle", desc: "与 Dall-E API 交互，生成图像。", category: "娱乐" },
+            { name: "Deezer", url: "https://github.com/shengwei1206/mcp-server-deezer", desc: "搜索和管理 Deezer 的音乐内容。", category: "娱乐" },
+            { name: "Digg", url: "https://github.com/shengwei1206/mcp-server-digg", desc: "获取 Digg 的新闻和文章。", category: "娱乐" },
+            { name: "Discord", url: "https://github.com/shengwei1206/mcp-server-discord", desc: "与 Discord API 交互，管理频道和消息。", category: "社交媒体" },
+            { name: "Disney", url: "https://github.com/shengwei1206/mcp-server-disney", desc: "搜索和管理 Disney+ 的内容。", category: "娱乐" },
+            { name: "Docusign", url: "https://github.com/shengwei1206/mcp-server-docusign", desc: "与 DocuSign API 交互，管理电子签名。", category: "生产力" },
+            { name: "Dribbble", url: "https://github.com/shengwei1206/mcp-server-dribbble", desc: "搜索 Dribbble 上的设计作品。", category: "娱乐" },
+            { name: "Dropbox", url: "https://github.com/shengwei1206/mcp-server-dropbox", desc: "与 Dropbox API 交互，管理文件。", category: "生产力" },
+            { name: "DuckDuckGo", url: "https://github.com/shengwei1206/mcp-server-duckduckgo", desc: "使用 DuckDuckGo 搜索网络内容。", category: "搜索" },
+            { name: "eBay", url: "https://github.com/shengwei1206/mcp-server-ebay", desc: "搜索 eBay 商品并获取详情。", category: "电商" },
+            { name: "Edx", url: "https://github.com/shengwei1206/mcp-server-edx", desc: "搜索和管理 edX 在线课程。", category: "教育" },
+            { name: "Etsy", url: "https://github.com/shengwei1206/mcp-server-etsy", desc: "搜索 Etsy 商品并获取详情。", category: "电商" },
+            { name: "Eventbrite", url: "https://github.com/shengwei1206/mcp-server-eventbrite", desc: "搜索和管理 Eventbrite 活动。", category: "社交媒体" },
+            { name: "Evernote", url: "https://github.com/shengwei1206/mcp-server-evernote", desc: "与 Evernote API 交互，管理笔记。", category: "生产力" },
+            { name: "Expedia", url: "https://github.com/shengwei1206/mcp-server-expedia", desc: "搜索 Expedia 的旅行和酒店信息。", category: "电商" },
+            { name: "Facebook", url: "https://github.com/shengwei1206/mcp-server-facebook", desc: "与 Facebook API 交互，管理帖子和页面。", category: "社交媒体" },
+            { name: "Figma", url: "https://github.com/shengwei1206/mcp-server-figma", desc: "与 Figma API 交互，管理设计文件。", category: "生产力" },
+            { name: "Fiverr", url: "https://github.com/shengwei1206/mcp-server-fiverr", desc: "搜索 Fiverr 的服务和演出。", category: "电商" },
+            { name: "Flickr", url: "https://github.com/shengwei1206/mcp-server-flickr", desc: "搜索和管理 Flickr 的照片。", category: "娱乐" },
+            { name: "Forbes", url: "https://github.com/shengwei1206/mcp-server-forbes", desc: "获取 Forbes 的新闻和文章。", category: "娱乐" },
+            { name: "Foursquare", url: "https://github.com/shengwei1206/mcp-server-foursquare", desc: "搜索 Foursquare 的地点和评论。", category: "社交媒体" },
+            { name: "Freelancer", url: "https://github.com/shengwei1206/mcp-server-freelancer", desc: "搜索和管理 Freelancer 的项目。", category: "电商" },
+            { name: "Giphy", url: "https://github.com/shengwei1206/mcp-server-giphy", desc: "搜索和管理 Giphy 的 GIF 动画。", category: "娱乐" },
+            { name: "Glassdoor", url: "https://github.com/shengwei1206/mcp-server-glassdoor", desc: "搜索 Glassdoor 的职位和公司评论。", category: "生产力" },
+            { name: "Goodreads", url: "https://github.com/shengwei1206/mcp-server-goodreads", desc: "搜索和管理 Goodreads 的书籍。", category: "教育" },
+            { name: "Google", url: "https://github.com/shengwei1206/mcp-server-google", desc: "使用 Google 搜索网络内容。", category: "搜索" },
+            { name: "Google Calendar", url: "https://github.com/shengwei1206/mcp-server-googlecalendar", desc: "与 Google Calendar API 交互，管理日程。", category: "生产力" },
+            { name: "Google Scholar", url: "https://github.com/shengwei1206/mcp-server-googlescholar", desc: "搜索 Google Scholar 上的学术论文。", category: "教育" },
+            { name: "Google Sheets", url: "https://github.com/shengwei1206/mcp-server-googlesheets", desc: "与 Google Sheets API 交互，管理表格数据。", category: "生产力" },
+            { name: "Google Translate", url: "https://github.com/shengwei1206/mcp-server-googletranslate", desc: "使用 Google Translate API 进行翻译。", category: "生产力" },
+            { name: "Grok", url: "https://github.com/shengwei1206/mcp-server-grok", desc: "与 xAI 的 Grok API 交互，支持对话生成。", category: "生产力" },
+            { name: "Gumroad", url: "https://github.com/shengwei1206/mcp-server-gumroad", desc: "搜索和管理 Gumroad 的产品。", category: "电商" },
+            { name: "Hacker News", url: "https://github.com/shengwei1206/mcp-server-hackernews", desc: "获取 Hacker News 的帖子和评论。", category: "社交媒体" },
+            { name: "Hootsuite", url: "https://github.com/shengwei1206/mcp-server-hootsuite", desc: "管理 Hootsuite 社交媒体发布。", category: "社交媒体" },
+            { name: "Hugging Face", url: "https://github.com/shengwei1206/mcp-server-huggingface", desc: "与 Hugging Face API 交互，调用模型。", category: "生产力" },
+            { name: "Hulu", url: "https://github.com/shengwei1206/mcp-server-hulu", desc: "搜索和管理 Hulu 的视频内容。", category: "娱乐" },
+            { name: "IBM Watson", url: "https://github.com/shengwei1206/mcp-server-ibmWatson", desc: "与 IBM Watson API 交互，支持 AI 服务。", category: "生产力" },
+            { name: "IFTTT", url: "https://github.com/shengwei1206/mcp-server-ifttt", desc: "与 IFTTT 交互，触发自动化工作流。", category: "生产力" },
+            { name: "IMDB", url: "https://github.com/shengwei1206/mcp-server-imdb", desc: "搜索和管理 IMDB 的电影和电视节目。", category: "娱乐" },
+            { name: "Imgur", url: "https://github.com/shengwei1206/mcp-server-imgur", desc: "搜索和管理 Imgur 的图片。", category: "娱乐" },
+            { name: "Indeed", url: "https://github.com/shengwei1206/mcp-server-indeed", desc: "搜索 Indeed 的职位列表。", category: "生产力" },
+            { name: "Instagram", url: "https://github.com/shengwei1206/mcp-server-instagram", desc: "与 Instagram API 交互，管理帖子和媒体。", category: "社交媒体" },
+            { name: "Intercom", url: "https://github.com/shengwei1206/mcp-server-intercom", desc: "与 Intercom API 交互，管理客户支持。", category: "生产力" },
+            { name: "Jira", url: "https://github.com/shengwei1206/mcp-server-jira", desc: "与 Jira API 交互，管理任务和问题。", category: "生产力" },
+            { name: "Khan Academy", url: "https://github.com/shengwei1206/mcp-server-khanacademy", desc: "搜索和管理 Khan Academy 的课程。", category: "教育" },
+            { name: "Kickstarter", url: "https://github.com/shengwei1206/mcp-server-kickstarter", desc: "搜索和管理 Kickstarter 的众筹项目。", category: "电商" },
+            { name: "Kaggle", url: "https://github.com/shengwei1206/mcp-server-kaggle", desc: "搜索和管理 Kaggle 的数据集和竞赛。", category: "教育" },
+            { name: "Last.fm", url: "https://github.com/shengwei1206/mcp-server-lastfm", desc: "搜索和管理 Last.fm 的音乐数据。", category: "娱乐" },
+            { name: "LinkedIn", url: "https://github.com/shengwei1206/mcp-server-linkedin", desc: "与 LinkedIn API 交互，管理个人资料和职位。", category: "社交媒体" },
+            { name: "Lyft", url: "https://github.com/shengwei1206/mcp-server-lyft", desc: "与 Lyft API 交互，查询乘车信息。", category: "生产力" },
+            { name: "Mailchimp", url: "https://github.com/shengwei1206/mcp-server-mailchimp", desc: "与 Mailchimp API 交互，管理电子邮件营销。", category: "生产力" },
+            { name: "Medium", url: "https://github.com/shengwei1206/mcp-server-medium", desc: "搜索和管理 Medium 的文章。", category: "社交媒体" },
+            { name: "Meetup", url: "https://github.com/shengwei1206/mcp-server-meetup", desc: "搜索和管理 Meetup 的活动。", category: "社交媒体" },
+            { name: "Microsoft", url: "https://github.com/shengwei1206/mcp-server-microsoft", desc: "与 Microsoft API 交互，支持 Office 和 Azure 服务。", category: "生产力" },
+            { name: "Microsoft Teams", url: "https://github.com/shengwei1206/mcp-server-microsoftteams", desc: "与 Microsoft Teams API 交互，管理团队和消息。", category: "生产力" },
+            { name: "MidJourney", url: "https://github.com/shengwei1206/mcp-server-midjourney", desc: "与 MidJourney API 交互，生成图像。", category: "娱乐" },
+            { name: "Miro", url: "https://github.com/shengwei1206/mcp-server-miro", desc: "与 Miro API 交互，管理协作白板。", category: "生产力" },
+            { name: "Monday", url: "https://github.com/shengwei1206/mcp-server-monday", desc: "与 Monday.com API 交互，管理项目和任务。", category: "生产力" },
+            { name: "Mood", url: "https://github.com/shengwei1206/mcp-server-mood", desc: "与 Mood 平台交互，管理情感分析数据。", category: "其他" },
+            { name: "Mozilla", url: "https://github.com/shengwei1206/mcp-server-mozilla", desc: "与 Mozilla 服务交互，支持 Firefox 和其他工具。", category: "生产力" },
+            { name: "MySQL", url: "https://github.com/shengwei1206/mcp-server-mysql", desc: "与 MySQL 数据库交互，支持查询和操作。", category: "数据库" },
+            { name: "NASA", url: "https://github.com/shengwei1206/mcp-server-nasa", desc: "与 NASA API 交互，获取航天数据。", category: "教育" },
+            { name: "Netflix", url: "https://github.com/shengwei1206/mcp-server-netflix", desc: "搜索和管理 Netflix 的视频内容。", category: "娱乐" },
+            { name: "Notion", url: "https://github.com/shengwei1206/mcp-server-notion", desc: "与 Notion API 交互，管理页面和数据库。", category: "生产力" },
+            { name: "NPM", url: "https://github.com/shengwei1206/mcp-server-npm", desc: "搜索和管理 NPM 软件包。", category: "生产力" },
+            { name: "NYTimes", url: "https://github.com/shengwei1206/mcp-server-nytimes", desc: "获取《纽约时报》的新闻和文章。", category: "娱乐" },
+            { name: "OpenAI", url: "https://github.com/shengwei1206/mcp-server-openai", desc: "与 OpenAI API 交互，支持对话和生成。", category: "生产力" },
+            { name: "OpenSea", url: "https://github.com/shengwei1206/mcp-server-opensea", desc: "与 OpenSea API 交互，查询 NFT 数据。", category: "金融" },
+            { name: "Oracle", url: "https://github.com/shengwei1206/mcp-server-oracle", desc: "与 Oracle 数据库和服务交互。", category: "数据库" },
+            { name: "Patreon", url: "https://github.com/shengwei1206/mcp-server-patreon", desc: "与 Patreon API 交互，管理众筹支持。", category: "社交媒体" },
+            { name: "Paypal", url: "https://github.com/shengwei1206/mcp-server-paypal", desc: "与 Paypal API 交互，管理支付和交易。", category: "金融" },
+            { name: "Pexels", url: "https://github.com/shengwei1206/mcp-server-pexels", desc: "搜索和管理 Pexels 的免费图片。", category: "娱乐" },
+            { name: "Pinterest", url: "https://github.com/shengwei1206/mcp-server-pinterest", desc: "与 Pinterest API 交互，管理图片和画板。", category: "社交媒体" },
+            { name: "Plaid", url: "https://github.com/shengwei1206/mcp-server-plaid", desc: "与 Plaid API 交互，管理金融数据。", category: "金融" },
+            { name: "Pocket", url: "https://github.com/shengwei1206/mcp-server-pocket", desc: "与 Pocket API 交互，管理阅读列表。", category: "生产力" },
+            { name: "Postman", url: "https://github.com/shengwei1206/mcp-server-postman", desc: "与 Postman API 交互，管理 API 测试。", category: "生产力" },
+            { name: "Prezi", url: "https://github.com/shengwei1206/mcp-server-prezi", desc: "与 Prezi API 交互，管理演示文稿。", category: "生产力" },
+            { name: "ProductHunt", url: "https://github.com/shengwei1206/mcp-server-producthunt", desc: "搜索和管理 Product Hunt 的产品。", category: "社交媒体" },
+            { name: "Quora", url: "https://github.com/shengwei1206/mcp-server-quora", desc: "搜索和管理 Quora 的问题和回答。", category: "社交媒体" },
+            { name: "Reddit", url: "https://github.com/shengwei1206/mcp-server-reddit", desc: "与 Reddit API 交互，管理帖子和评论。", category: "社交媒体" },
+            { name: "Reuters", url: "https://github.com/shengwei1206/mcp-server-reuters", desc: "获取路透社的新闻和文章。", category: "娱乐" },
+            { name: "Salesforce", url: "https://github.com/shengwei1206/mcp-server-salesforce", desc: "与 Salesforce API 交互，管理客户关系。", category: "生产力" },
+            { name: "SAP", url: "https://github.com/shengwei1206/mcp-server-sap", desc: "与 SAP 系统交互，支持企业资源管理。", category: "生产力" },
+            { name: "Shopify", url: "https://github.com/shengwei1206/mcp-server-shopify", desc: "与 Shopify API 交互，管理电商店铺。", category: "电商" },
+            { name: "Shutterstock", url: "https://github.com/shengwei1206/mcp-server-shutterstock", desc: "搜索和管理 Shutterstock 的图片和视频。", category: "娱乐" },
+            { name: "Skype", url: "https://github.com/shengwei1206/mcp-server-skype", desc: "与 Skype API 交互，管理消息和通话。", category: "社交媒体" },
+            { name: "Slack", url: "https://github.com/shengwei1206/mcp-server-slack", desc: "与 Slack API 交互，管理频道和消息。", category: "生产力" },
+            { name: "Slideshare", url: "https://github.com/shengwei1206/mcp-server-slideshare", desc: "搜索和管理 SlideShare 的演示文稿。", category: "教育" },
+            { name: "Smartsheet", url: "https://github.com/shengwei1206/mcp-server-smartsheet", desc: "与 Smartsheet API 交互，管理表格和任务。", category: "生产力" },
+            { name: "Snapchat", url: "https://github.com/shengwei1206/mcp-server-snapchat", desc: "与 Snapchat API 交互，管理故事和消息。", category: "社交媒体" },
+            { name: "Soundcloud", url: "https://github.com/shengwei1206/mcp-server-soundcloud", desc: "搜索和管理 SoundCloud 的音乐内容。", category: "娱乐" },
+            { name: "Spotify", url: "https://github.com/shengwei1206/mcp-server-spotify", desc: "与 Spotify API 交互，管理音乐和播放列表。", category: "娱乐" },
+            { name: "Squarespace", url: "https://github.com/shengwei1206/mcp-server-squarespace", desc: "与 Squarespace API 交互，管理网站内容。", category: "生产力" },
+            { name: "Stack Overflow", url: "https://github.com/shengwei1206/mcp-server-stackoverflow", desc: "搜索和管理 Stack Overflow 的问题和回答。", category: "教育" },
+            { name: "Steam", url: "https://github.com/shengwei1206/mcp-server-steam", desc: "与 Steam API 交互，查询游戏数据。", category: "娱乐" },
+            { name: "Strava", url: "https://github.com/shengwei1206/mcp-server-strava", desc: "与 Strava API 交互，管理运动数据。", category: "生产力" },
+            { name: "SurveyMonkey", url: "https://github.com/shengwei1206/mcp-server-surveymonkey", desc: "与 SurveyMonkey API 交互，管理调查。", category: "生产力" },
+            { name: "Tableau", url: "https://github.com/shengwei1206/mcp-server-tableau", desc: "与 Tableau API 交互，管理数据可视化。", category: "生产力" },
+            { name: "Telegram", url: "https://github.com/shengwei1206/mcp-server-telegram", desc: "与 Telegram API 交互，管理消息和群组。", category: "社交媒体" },
+            { name: "Tesla", url: "https://github.com/shengwei1206/mcp-server-tesla", desc: "与 Tesla API 交互，管理车辆数据。", category: "生产力" },
+            { name: "The Guardian", url: "https://github.com/shengwei1206/mcp-server-theguardian", desc: "获取《卫报》的新闻和文章。", category: "娱乐" },
+            { name: "Tiktok", url: "https://github.com/shengwei1206/mcp-server-tiktok", desc: "与 TikTok API 交互，管理视频和趋势。", category: "社交媒体" },
+            { name: "Trello", url: "https://github.com/shengwei1206/mcp-server-trello", desc: "与 Trello API 交互，管理任务和看板。", category: "生产力" },
+            { name: "Tripadvisor", url: "https://github.com/shengwei1206/mcp-server-tripadvisor", desc: "搜索和管理 Tripadvisor 的旅行信息。", category: "电商" },
+            { name: "Tumblr", url: "https://github.com/shengwei1206/mcp-server-tumblr", desc: "与 Tumblr API 交互，管理博客内容。", category: "社交媒体" },
+            { name: "Twitch", url: "https://github.com/shengwei1206/mcp-server-twitch", desc: "与 Twitch API 交互，管理直播和视频。", category: "娱乐" },
+            { name: "Twitter", url: "https://github.com/shengwei1206/mcp-server-twitter", desc: "与 Twitter API 交互，管理推文和趋势。", category: "社交媒体" },
+            { name: "Uber", url: "https://github.com/shengwei1206/mcp-server-uber", desc: "与 Uber API 交互，查询乘车信息。", category: "生产力" },
+            { name: "Udemy", url: "https://github.com/shengwei1206/mcp-server-udemy", desc: "搜索和管理 Udemy 的在线课程。", category: "教育" },
+            { name: "Unsplash", url: "https://github.com/shengwei1206/mcp-server-unsplash", desc: "搜索和管理 Unsplash 的免费图片。", category: "娱乐" },
+            { name: "Upwork", url: "https://github.com/shengwei1206/mcp-server-upwork", desc: "搜索和管理 Upwork 的自由职业项目。", category: "电商" },
+            { name: "Venmo", url: "https://github.com/shengwei1206/mcp-server-venmo", desc: "与 Venmo API 交互，管理支付。", category: "金融" },
+            { name: "Vimeo", url: "https://github.com/shengwei1206/mcp-server-vimeo", desc: "与 Vimeo API 交互，管理视频内容。", category: "娱乐" },
+            { name: "Walmart", url: "https://github.com/shengwei1206/mcp-server-walmart", desc: "搜索 Walmart 商品并获取详情。", category: "电商" },
+            { name: "Washington Post", url: "https://github.com/shengwei1206/mcp-server-washingtonpost", desc: "获取《华盛顿邮报》的新闻和文章。", category: "娱乐" },
+            { name: "Wattpad", url: "https://github.com/shengwei1206/mcp-server-wattpad", desc: "搜索和管理 Wattpad 的故事和书籍。", category: "娱乐" },
+            { name: "Weather", url: "https://github.com/shengwei1206/mcp-server-weather", desc: "查询天气数据（如 OpenWeather API）。", category: "其他" },
+            { name: "Webflow", url: "https://github.com/shengwei1206/mcp-server-webflow", desc: "与 Webflow API 交互，管理网站内容。", category: "生产力" },
+            { name: "WeChat", url: "https://github.com/shengwei1206/mcp-server-wechat", desc: "与 WeChat API 交互，管理消息和联系人。", category: "社交媒体" },
+            { name: "WhatsApp", url: "https://github.com/shengwei1206/mcp-server-whatsapp", desc: "与 WhatsApp API 交互，管理消息。", category: "社交媒体" },
+            { name: "Wikipedia", url: "https://github.com/shengwei1206/mcp-server-wikipedia", desc: "搜索和管理 Wikipedia 的文章。", category: "教育" },
+            { name: "Wix", url: "https://github.com/shengwei1206/mcp-server-wix", desc: "与 Wix API 交互，管理网站内容。", category: "生产力" },
+            { name: "Wordpress", url: "https://github.com/shengwei1206/mcp-server-wordpress", desc: "与 Wordpress API 交互，管理博客内容。", category: "社交媒体" },
+            { name: "X", url: "https://github.com/shengwei1206/mcp-server-x", desc: "与 X（Twitter）API 交互，管理推文和趋势。", category: "社交媒体" },
+            { name: "Yahoo", url: "https://github.com/shengwei1206/mcp-server-yahoo", desc: "使用 Yahoo 搜索网络内容。", category: "搜索" },
+            { name: "Yelp", url: "https://github.com/shengwei1206/mcp-server-yelp", desc: "搜索和管理 Yelp 的商家和评论。", category: "社交媒体" },
+            { name: "YouTube", url: "https://github.com/shengwei1206/mcp-server-youtube", desc: "与 YouTube API 交互，管理视频和播放列表。", category: "娱乐" },
+            { name: "Zapier", url: "https://github.com/shengwei1206/mcp-server-zapier", desc: "与 Zapier API 交互，触发自动化工作流。", category: "生产力" },
+            { name: "Zendesk", url: "https://github.com/shengwei1206/mcp-server-zendesk", desc: "与 Zendesk API 交互，管理客户支持。", category: "生产力" },
+            { name: "Zoho", url: "https://github.com/shengwei1206/mcp-server-zoho", desc: "与 Zoho API 交互，管理 CRM 和办公工具。", category: "生产力" },
+            { name: "Zoom", url: "https://github.com/shengwei1206/mcp-server-zoom", desc: "与 Zoom API 交互，管理会议和日程。", category: "生产力" }
+        ];
+
+        // 分页加载逻辑
+        let officialPage = 0;
+        let communityPage = 0;
+        const itemsPerPage = 6;
+        let filteredOfficial = [...officialIntegrations];
+        let filteredCommunity = [...communityServers];
+
+        function loadItems(containerId, items, page) {
+            const container = document.getElementById(containerId);
+            const start = page * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = items.slice(start, end);
+
+            pageItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+                div.innerHTML = `
+                    <h4 class="text-lg font-medium flex items-center">
+                        ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                        <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                    </h4>
+                    <p>${item.desc}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 初始加载所有项目
+        document.addEventListener('DOMContentLoaded', () => {
+            // 加载所有官方集成
+            filteredOfficial.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+            div.innerHTML = `
+                <h4 class="text-lg font-medium flex items-center">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                </h4>
+                <p>${item.desc}</p>
+            `;
+            document.getElementById('official-integrations').appendChild(div);
+            });
+            
+            // 加载所有社区服务器
+            filteredCommunity.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+            div.innerHTML = `
+                <h4 class="text-lg font-medium flex items-center">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                </h4>
+                <p>${item.desc}</p>
+            `;
+            document.getElementById('community-servers').appendChild(div);
+            });
+            
+            // 隐藏加载更多按钮
+            document.getElementById('load-more').style.display = 'none';
+        });
+
+        // 修改筛选功能以加载所有匹配项
+        function filterItems() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            filteredOfficial = officialIntegrations.filter(item => {
+            const matchesSearch = item.name.toLowerCase().includes(searchInput) || item.desc.toLowerCase().includes(searchInput);
+            const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+            return matchesSearch && matchesCategory;
+            });
+
+            filteredCommunity = communityServers.filter(item => {
+            const matchesSearch = item.name.toLowerCase().includes(searchInput) || item.desc.toLowerCase().includes(searchInput);
+            const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+            return matchesSearch && matchesCategory;
+            });
+
+            document.getElementById('official-integrations').innerHTML = '';
+            document.getElementById('community-servers').innerHTML = '';
+            
+            // 重新加载所有过滤后的项目
+            filteredOfficial.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+            div.innerHTML = `
+                <h4 class="text-lg font-medium flex items-center">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                </h4>
+                <p>${item.desc}</p>
+            `;
+            document.getElementById('official-integrations').appendChild(div);
+            });
+            
+            filteredCommunity.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+            div.innerHTML = `
+                <h4 class="text-lg font-medium flex items-center">
+                ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                </h4>
+                <p>${item.desc}</p>
+            `;
+            document.getElementById('community-servers').appendChild(div);
+            });
+        }
+
+        // 搜索和筛选功能
+        function filterItems() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            filteredOfficial = officialIntegrations.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchInput) || item.desc.toLowerCase().includes(searchInput);
+                const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            filteredCommunity = communityServers.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchInput) || item.desc.toLowerCase().includes(searchInput);
+                const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            // 清空容器
+            document.getElementById('official-integrations').innerHTML = '';
+            document.getElementById('community-servers').innerHTML = '';
+            
+            // 直接展示所有过滤后的项目
+            filteredOfficial.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+                div.innerHTML = `
+                    <h4 class="text-lg font-medium flex items-center">
+                        ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                        <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                    </h4>
+                    <p>${item.desc}</p>
+                `;
+                document.getElementById('official-integrations').appendChild(div);
+            });
+            
+            filteredCommunity.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card p-6 border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300';
+                div.innerHTML = `
+                    <h4 class="text-lg font-medium flex items-center">
+                        ${item.icon ? `<img src="${item.icon}" alt="${item.name} Logo" class="w-4 h-4 mr-2">` : ''}
+                        <a href="${item.url}" class="text-blue-600 hover:underline">${item.name}</a>
+                    </h4>
+                    <p>${item.desc}</p>
+                `;
+                document.getElementById('community-servers').appendChild(div);
+            });
+            
+            // 隐藏加载更多按钮，因为已经显示所有项目
+            document.getElementById('load-more').style.display = 'none';
+        }
+
+        document.getElementById('search-input').addEventListener('input', filterItems);
+        document.getElementById('category-filter').addEventListener('change', filterItems);
+
+        // 返回顶部按钮
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
